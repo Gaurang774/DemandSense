@@ -1,0 +1,372 @@
+/* www/style.css */
+/* Modern Styling for DemandSense Analytics */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --font-family-base: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-subtle: #e2e8f0;
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --accent-purple: #7c3aed;
+  --success-emerald: #059669;
+  --warning-amber: #d97706;
+  --danger-rose: #e11d48;
+  --card-radius: 14px;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+/* Navbar branding */
+.navbar {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.8rem 1.5rem;
+}
+
+.navbar-brand {
+  font-weight: 800 !important;
+  font-size: 1.35rem !important;
+  letter-spacing: -0.03em;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-brand span.badge-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nav-link {
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+  transition: all 0.2s ease-in-out;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Value Boxes & KPI Cards */
+.kpi-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-purple));
+}
+
+.kpi-card.emerald::before { background: linear-gradient(90deg, #10b981, #059669); }
+.kpi-card.purple::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+.kpi-card.amber::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+.kpi-card.blue::before { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+
+.kpi-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.kpi-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Sidebar Styling */
+.sidebar-panel {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--card-radius);
+  padding: 1.4rem;
+  box-shadow: var(--card-shadow);
+}
+
+.sidebar-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Insight Box */
+.insight-panel {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--card-radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.insight-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #166534;
+  margin-bottom: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.insight-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.insight-item {
+  position: relative;
+  padding-left: 1.4rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #14532d;
+}
+
+.insight-item:last-child {
+  margin-bottom: 0;
+}
+
+.insight-item::before {
+  content: "•";
+  position: absolute;
+  left: 0.35rem;
+  color: #15803d;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+/* Standard Analytics Card */
+.analytics-card {
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.card-title-custom {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+.card-subtitle-custom {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* Status Badges */
+.badge-growing {
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-declining {
+  background: #ffe4e6;
+  color: #be123c;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-stable {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Audit Log Banner */
+.audit-banner {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: #475569;
+  margin-top: 1rem;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  font-size: 0.9rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* =========================================================================
+   PLOTLY POLISHING & MODEBAR OVERRIDES
+   Fixes ugly grey bar, repositions to top-right corner, and cleans up icons
+   ========================================================================= */
+
+.js-plotly-plot .plotly .modebar-container {
+  top: 6px !important;
+  right: 12px !important;
+  background-color: transparent !important;
+  z-index: 1000 !important;
+}
+
+.js-plotly-plot .plotly .modebar {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+  border-radius: 8px !important;
+  padding: 3px 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.js-plotly-plot:hover .plotly .modebar {
+  opacity: 1 !important;
+}
+
+.js-plotly-plot .plotly .modebar-group {
+  background-color: transparent !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn {
+  padding: 3px 4px !important;
+  border-radius: 4px !important;
+  transition: all 0.15s ease !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover {
+  background-color: #eff6ff !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn svg path {
+  fill: #64748b !important;
+  transition: fill 0.15s ease !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover svg path {
+  fill: #2563eb !important;
+}
+
+/* Ensure chart SVG containers don't clip axes */
+.js-plotly-plot .plotly .main-svg {
+  overflow: visible !important;
+}
+
+.js-plotly-plot .plotly .ytitle {
+  font-weight: 700 !important;
+}

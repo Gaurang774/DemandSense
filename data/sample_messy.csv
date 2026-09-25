@@ -1,0 +1,163 @@
+"date","product","category","quantity","unit_price","discount"
+"2026-07-25","Chocolate Muffin","Bakery",36,75,0
+"2026-05-11","Cold Brew","Beverages",10,120,0
+"2026-08-21","Blueberry Scone","Bakery",18,85,0
+"2026-07-31","Chocolate Muffin","Bakery",29,75,0
+"2026-06-22","Tea","Beverages",30,50,0
+"2026-07-28","Tea","Beverages",26,50,0
+"2026-06-12","Blueberry Scone","Bakery",19,85,0
+"2026-05-18","Smoothie","Beverages",15,140,0
+"2026-08-07","Tea","Beverages",31,50,0
+"2026-08-04","Croissant","Bakery",23,90,10
+"2026-07-28","Grilled Sandwich","Snacks",27,150,0
+"2026-05-05","Blueberry Scone","Bakery",17,85,0
+"2026-08-01","Veggie Wrap","Snacks",23,130,NA
+"2026-06-17","Coffee","Beverages",35,80,0
+"2026-05-29","Bagel & Cream Cheese","Snacks",21,110,0
+"2026-05-24","Croissant","Bakery",34,-80,0
+"2026-08-01","Grilled Sandwich","Snacks",31,150,20
+"2026-05-29","Croissant","Bakery",34,90,NA
+"2026-08-27","Chocolate Muffin","Bakery",21,75,0
+"2026-07-12","Blueberry Scone","Bakery",21,85,NA
+"2026-07-26","Coffee","Beverages",50,80,0
+"2026-06-06","Chocolate Muffin","Bakery",37,75,0
+"2026-08-19","Grilled Sandwich","Snacks",25,150,0
+"2026-05-13","Coffee","Beverages",35,80,0
+"2026-08-10","Coffee","Beverages",38,80,0
+"2026-08-24","Bagel & Cream Cheese","Snacks",18,NA,0
+"2026-05-09","Cold Brew","Beverages",14,120,5
+"2026-05-09","Chocolate Muffin","Bakery",36,75,NA
+"2026-06-21","Croissant","Bakery",38,90,0
+"2026-08-22","Chocolate Muffin","Bakery",39,75,0
+"2026-07-24","Chocolate Muffin","Bakery",34,75,0
+"2026-06-07","Tea","Beverages",39,50,0
+"2026-08-13","Coffee","Beverages",40,80,0
+"2026-05-12","Smoothie","Beverages",15,140,10
+"2026-06-06","Cold Brew","Beverages",17,120,0
+"2026-06-07","Blueberry Scone","Bakery",23,85,15
+"2026-05-05","Bagel & Cream Cheese","Snacks",14,110,0
+"2026-05-23","Grilled Sandwich","Snacks",42,150,0
+"2026-07-13","Veggie Wrap","Snacks",18,130,0
+"2026-06-20","Chocolate Muffin","Bakery",-2,75,0
+"2026-07-25","Smoothie","Beverages",24,140,0
+"2026-07-11","Grilled Sandwich","Snacks",43,150,0
+"2026-07-15","Bagel & Cream Cheese","Snacks",13,110,0
+"2026-07-08","Tea","Beverages",27,50,0
+"2026-08-18","Bagel & Cream Cheese","Snacks",10,110,NA
+"2026-07-10","Smoothie","Beverages",22,140,0
+"2026-06-02","Croissant","Bakery",24,90,0
+"2026-08-17","Croissant","Bakery",25,90,0
+"2026-05-19","Tea","Beverages",27,50,0
+"2026-06-28","Croissant","Bakery",36,90,0
+"2026-06-27","Veggie Wrap","Snacks",24,0,0
+"2026-07-01","Cold Brew","Beverages",14,120,0
+"2026-08-04","Smoothie","Beverages",17,140,NA
+"2026-05-06","Tea","Beverages",28,50,0
+"2026-06-22","Chocolate Muffin","Bakery",22,75,0
+"2026-06-03","Grilled Sandwich","Snacks",19,150,0
+"01-07-2026","Tea","Beverages",21,50,0
+"2026-05-29","Smoothie","Beverages",24,140,0
+"2026-08-07","Croissant","Bakery",29,90,20
+"2026-05-01","Cold Brew","Beverages",16,120,0
+"2026-05-12","Tea","Beverages",28,50,10
+"2026-06-19","Coffee","Beverages",49,80,0
+"2026-06-23","Tea","Beverages",20,50,NA
+"2026-08-03","Bagel & Cream Cheese","Snacks",12,110,0
+"2026-06-03","Smoothie","Beverages",14,140,0
+"2026-05-13","Croissant","Bakery",25,90,0
+"2026-08-27","Coffee","Beverages",46,80,NA
+"2026-06-03","Chocolate Muffin","Bakery",21,75,0
+"2026-06-27","Croissant","Bakery",42,90,0
+"2026-08-08","Cold Brew","Beverages",31,120,10
+"2026/06/15","Veggie Wrap","Snacks",20,130,0
+"2026-07-25","Blueberry Scone","Bakery",23,85,0
+"2026-06-15","Coffee","Beverages",34,80,0
+"2026-07-01","Croissant","Bakery",26,90,0
+"2026-05-08","Tea","Beverages",35,50,0
+"2026-08-12","Cold Brew","Beverages",17,120,0
+"2026-07-02","Croissant","Bakery",22,90,0
+"2026-06-25","Croissant","Bakery",0,90,NA
+"2026-08-09","Grilled Sandwich","Snacks",32,150,0
+"2026-05-25","Veggie Wrap","Snacks",10,130,15
+"2026-08-28","Smoothie","Beverages",0,140,0
+"2026-07-04","Grilled Sandwich","Snacks",47,150,0
+"2026-05-17","Veggie Wrap","Snacks",20,130,0
+"2026-08-15","Coffee","Beverages",68,80,10
+"2026-05-22","Smoothie","Beverages",18,140,0
+"2026-07-12","Croissant","Bakery",36,90,0
+"2026-07-26","Tea","Beverages",-1,50,0
+"2026-06-11","Coffee","Beverages",38,80,0
+"2026-06-26","Croissant","Bakery",32,90,NA
+"2026-07-24","Grilled Sandwich","Snacks",31,-50,0
+"2026-07-30","Grilled Sandwich","Snacks",25,150,0
+"2026-06-11","Grilled Sandwich","Snacks",21,150,0
+"2026-07-08","Croissant","Bakery",17,90,0
+"2026-06-03","Veggie Wrap","Snacks",12,130,0
+"2026-05-02","Cold Brew","Beverages",21,120,0
+"2026-08-10","Bagel & Cream Cheese","Snacks",19,110,NA
+"2026-06-29","Croissant","Bakery",21,90,0
+"2026-07-12","Smoothie","Beverages",21,140,0
+"2026-05-06","Smoothie","Beverages",11,140,0
+"2026-05-30","Cold Brew","Beverages",21,120,0
+"2026-06-04","Grilled Sandwich","Snacks",24,150,0
+"2026-05-14","Tea","Beverages",29,50,0
+"2026-07-23","Cold Brew","Beverages",17,120,0
+"2026-06-19","Grilled Sandwich","Snacks",33,150,0
+"2026-08-21","Smoothie","Beverages",23,140,0
+"2026-05-31","Smoothie","Beverages",22,140,20
+"2026-08-04","Cold Brew","Beverages",16,120,5
+NA,"Cold Brew","Beverages",24,120,0
+"2026-05-11","Croissant","Bakery",0,90,0
+"2026-05-23","Chocolate Muffin","Bakery",36,75,NA
+"2026-06-05","Smoothie","Beverages",15,140,0
+"2026-07-05","Veggie Wrap","Snacks",16,130,0
+"2026-06-24","Smoothie","Beverages",12,140,5
+"2026-08-26","Veggie Wrap","Snacks",10,130,0
+"2026-08-25","Veggie Wrap","Snacks",11,130,0
+"2026-06-04","Croissant","Bakery",31,90,0
+"2026-08-22","Bagel & Cream Cheese","Snacks",31,110,NA
+"2026-07-25","Bagel & Cream Cheese","Snacks",29,110,0
+"2026-06-22","Blueberry Scone","Bakery",23,85,15
+"2026-08-05","Smoothie","Beverages",14,140,0
+"2026-05-25","Bagel & Cream Cheese","Snacks",17,110,10
+"2026-05-03","Smoothie","Beverages",19,140,0
+"2026-08-18","Chocolate Muffin","Bakery",53,75,0
+"2026-05-11","Grilled Sandwich","Snacks",13,150,0
+"2026-05-03","Chocolate Muffin","Bakery",30,75,NA
+"2026-06-01","Chocolate Muffin","Bakery",19,75,0
+"2026-05-30","Smoothie","Beverages",24,140,0
+"2026-05-28","Chocolate Muffin","Bakery",22,75,15
+NA,"Veggie Wrap","Snacks",8,130,NA
+"2026-07-09","Bagel & Cream Cheese","Snacks",21,110,10
+"2026-07-02","Smoothie","Beverages",19,140,0
+"2026-05-19","Coffee","Beverages",39,80,20
+"2026-06-27","Cold Brew","Beverages",23,120,0
+"2026-06-16","Blueberry Scone","Bakery",16,85,0
+"2026-06-11","Blueberry Scone","Bakery",17,85,0
+"2026-05-05","Chocolate Muffin","Bakery",22,75,10
+"2026-07-28","Coffee","Beverages",40,80,0
+"2026-06-14","Tea","Beverages",37,50,0
+"2026-06-02","Coffee","Beverages",37,80,0
+"2026-06-12","Chocolate Muffin","Bakery",-5,75,0
+"2026-08-09","Blueberry Scone","Bakery",21,85,0
+"2026-07-03","Tea","Beverages",36,50,0
+"2026-08-25","Grilled Sandwich","Snacks",28,150,0
+"2026-08-28","Chocolate Muffin","Bakery",32,75,0
+"2026-07-17","Tea","Beverages",34,50,0
+"2026-05-27","Chocolate Muffin","Bakery",14,75,0
+"2026-08-02","Chocolate Muffin","Bakery",28,75,0
+"2026-06-08","Chocolate Muffin","Bakery",21,75,0
+"2026-06-28","Tea","Beverages",28,50,0
+"2026-08-30","Chocolate Muffin","Bakery",33,75,0
+"2026-08-04","Smoothie","Beverages",17,140,NA
+"2026-06-03","Smoothie","Beverages",14,140,0
+"2026-06-06","Chocolate Muffin","Bakery",37,75,0
+"2026-05-11","Croissant","Bakery",0,90,0
+"2026-06-03","Grilled Sandwich","Snacks",19,150,0
+"2026-08-10","Bagel & Cream Cheese","Snacks",19,110,NA
+"2026-07-09","Bagel & Cream Cheese","Snacks",21,110,10
+"2026-06-27","Croissant","Bakery",42,90,0
+"2026-08-09","Grilled Sandwich","Snacks",32,150,0
+"2026-05-17","Veggie Wrap","Snacks",20,130,0
+"2026-05-19","Coffee","Beverages",39,80,20
+"2026-07-25","Smoothie","Beverages",24,140,0
