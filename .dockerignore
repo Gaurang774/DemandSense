@@ -1,0 +1,15 @@
+# Git version control
+.git
+.gitignore
+
+# R environment & temporary files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Temporary logs and documents
+*.log
+*.tmp
+prd.md
