@@ -10,8 +10,8 @@
 FROM rocker/shiny:latest
 
 # Step 2: Install required Linux system libraries
-# Packages like readr, plotly, and DT require underlying C/C++ system libraries
-# for networking (libcurl, openssl), XML parsing, and font/image rendering.
+# Packages like fs (used by bslib/shiny), readr, plotly, and DT require underlying C/C++ system libraries
+# including libuv (event loop), networking (libcurl, openssl), XML parsing, and font rendering.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
@@ -23,6 +23,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libtiff-dev \
     libjpeg-dev \
+    libuv1-dev \
+    libsodium-dev \
+    libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Step 3: Install required R packages
@@ -37,8 +40,12 @@ RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/__linux
         'ggplot2', \
         'plotly', \
         'DT', \
-        'scales' \
+        'scales', \
+        'fs' \
     ))"
+
+# Verify all required R packages load without missing shared library errors
+RUN R -e "library(shiny); library(bslib); library(dplyr); library(tidyr); library(readr); library(lubridate); library(ggplot2); library(plotly); library(DT); library(scales); library(fs); cat('--- All R dependencies verified successfully! ---\n')"
 
 # Step 4: Set the working directory inside the container
 WORKDIR /app
