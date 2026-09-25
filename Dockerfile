@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Step 3: Install required R packages
-# Installs all data manipulation, charting, UI theming, and table packages.
-RUN R -e "options(repos = c(CRAN = 'https://cloud.r-project.org/')); \
+# Uses Posit Package Manager for pre-compiled Linux binaries (super fast build without source compilation)
+RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/__linux__/jammy/latest')); \
     install.packages(c( \
         'bslib', \
         'dplyr', \
