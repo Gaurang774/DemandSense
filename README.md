@@ -1,6 +1,7 @@
 # DemandSense — Interactive Sales & Demand Analytics in R
 
 > **College Mini-Project**  
+> 🌐 **Live Demo:** [https://demandsense-mmcq.onrender.com](https://demandsense-mmcq.onrender.com)  
 > **Technologies:** R (v4.6.1+), Shiny, bslib, ggplot2, plotly, dplyr, readr, tidyr, DT, scales  
 > **Core Concept:** Transforming raw business transaction data into automated visual insights using R.
 
