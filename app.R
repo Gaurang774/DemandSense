@@ -320,9 +320,9 @@ ui <- bslib::page_navbar(
       style = "padding: 0.5rem 0;",
       div(
         class = "analytics-card",
-        div(class = "card-title-custom", "7-Day Moving Day-of-Week Projection"),
+        div(class = "card-title-custom", "7-Day Baseline Projection"),
         div(class = "card-subtitle-custom",
-            "Statistical projection incorporating weekday multipliers and recent 14-day velocity"),
+            "Day-of-week weighted baseline projection using recent 14-day velocity — confidence improves with more historical data"),
         plotlyOutput("plot_forecast_view", height = "320px")
       ),
       tags$div(style = "height: 1rem;"),
@@ -392,6 +392,30 @@ server <- function(input, output, session) {
   # ---------------------------------------------------------------------------
   output$ui_audit_badge <- renderUI({
     aud <- audit_info()
+
+    # Build warning tags for non-obvious data quality issues
+    warnings <- tagList()
+    if (!is.null(aud$non_positive_qty_rows) && aud$non_positive_qty_rows > 0) {
+      warnings <- tagList(warnings,
+        tags$li(style = "color: #d97706; font-weight: 600;",
+                paste0("Negative/Zero Qty Dropped: ", aud$non_positive_qty_rows)))
+    }
+    if (!is.null(aud$non_positive_price_rows) && aud$non_positive_price_rows > 0) {
+      warnings <- tagList(warnings,
+        tags$li(style = "color: #d97706; font-weight: 600;",
+                paste0("Negative/Zero Price Dropped: ", aud$non_positive_price_rows)))
+    }
+    if (!is.null(aud$discount_clamped_rows) && aud$discount_clamped_rows > 0) {
+      warnings <- tagList(warnings,
+        tags$li(style = "color: #ef4444; font-weight: 600;",
+                paste0("Discount >100% Clamped: ", aud$discount_clamped_rows)))
+    }
+    if (!is.null(aud$mixed_date_formats) && aud$mixed_date_formats) {
+      warnings <- tagList(warnings,
+        tags$li(style = "color: #d97706; font-weight: 600;",
+                "Mixed Date Formats Detected"))
+    }
+
     div(
       class = "audit-banner",
       div(style = "font-weight: 700; margin-bottom: 4px;", "R Cleaning Audit:"),
@@ -401,7 +425,9 @@ server <- function(input, output, session) {
         tags$li(paste("Bad Dates:", aud$bad_dates)),
         tags$li(paste("Bad Numbers:", aud$bad_numbers)),
         tags$li(paste("Duplicates Removed:", aud$duplicates_removed)),
-        tags$li(paste("Clean Rows:", aud$rows_after_cleaning))
+        warnings,
+        tags$li(style = "font-weight: 700;",
+                paste("Clean Rows:", aud$rows_after_cleaning))
       )
     )
   })
@@ -578,6 +604,10 @@ server <- function(input, output, session) {
       "badge-growing"
     } else if (grepl("Decreasing", p$trend)) {
       "badge-declining"
+    } else if (grepl("Emerging", p$trend)) {
+      "badge-growing"
+    } else if (grepl("Discontinued", p$trend)) {
+      "badge-declining"
     } else {
       "badge-stable"
     }
@@ -593,7 +623,7 @@ server <- function(input, output, session) {
           div(style = "font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase;", "Product Revenue"),
           div(style = "font-size: 1.3rem; font-weight: 800; color: #059669;", paste0("Rs ", format(round(p$revenue), big.mark = ",")))),
       div(style = "margin-bottom: 0.75rem;",
-          div(style = "font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase;", "Average Daily Sales"),
+          div(style = "font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase;", "Avg Daily Sales (Active Days)"),
           div(style = "font-size: 1.1rem; font-weight: 700;", paste(round(p$avg_daily_sales, 1), "units/day"))),
       div(style = "margin-bottom: 0.75rem;",
           div(style = "font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase;", "Revenue Contribution"),
@@ -676,7 +706,13 @@ server <- function(input, output, session) {
         Category          = category,
         `Early Daily Avg` = round(early_avg, 1),
         `Recent Daily Avg` = round(recent_avg, 1),
-        `Change (%)`      = sprintf("%+.1f%%", change_pct),
+        # Display human-readable labels for edge cases instead of Inf%
+        `Change (%)`      = case_when(
+          status == "Emerging"     ~ "New",
+          status == "Discontinued" ~ "-100%",
+          status == "No Activity"  ~ "—",
+          TRUE ~ sprintf("%+.1f%%", change_pct)
+        ),
         Status            = status
       )
 
@@ -727,33 +763,50 @@ server <- function(input, output, session) {
     chg <- period_change_data()
     req(!is.null(chg))
 
-    rev_delta_color <- if (chg$rev_change_pct >= 0) "#059669" else "#e11d48"
-    sign_str        <- if (chg$rev_change_pct >= 0) "+" else ""
+    # Format percentage, handling Inf (new demand from zero baseline)
+    fmt_pct <- function(val, sign_prefix = TRUE) {
+      if (is.infinite(val) && val > 0) return("New Demand")
+      if (is.infinite(val) && val < 0) return("Eliminated")
+      prefix <- if (sign_prefix && val >= 0) "+" else ""
+      paste0(prefix, round(val, 1), "%")
+    }
+
+    rev_delta_color <- if (is.finite(chg$rev_change_pct) && chg$rev_change_pct < 0) "#e11d48" else "#059669"
+
+    # Format top gainer/decline labels, guarding against Inf
+    gainer_label <- if (!is.null(chg$top_gainer)) {
+      if (is.infinite(chg$top_gainer$rev_pct)) "New in Period B" else paste0("+", round(chg$top_gainer$rev_pct, 1), "% revenue gain")
+    } else "N/A"
+    decline_label <- if (!is.null(chg$biggest_decline)) {
+      if (is.infinite(chg$biggest_decline$rev_pct)) "Absent in Period B" else paste0(round(chg$biggest_decline$rev_pct, 1), "% revenue drop")
+    } else "N/A"
 
     div(
       class = "kpi-container", style = "margin-top: 1rem; margin-bottom: 1rem;",
       div(class = "kpi-card",
           div(class = "kpi-label", "Period Revenue Delta"),
           div(class = "kpi-value", style = paste0("color: ", rev_delta_color, ";"),
-              paste0(sign_str, round(chg$rev_change_pct, 1), "%")),
+              fmt_pct(chg$rev_change_pct)),
           div(class = "kpi-subtitle",
               paste0("Rs ", format(round(chg$rev_a), big.mark = ","),
                      " -> Rs ", format(round(chg$rev_b), big.mark = ",")))
       ),
       div(class = "kpi-card",
           div(class = "kpi-label", "Units Sold Delta"),
-          div(class = "kpi-value", paste0(sign_str, round(chg$units_change_pct, 1), "%")),
+          div(class = "kpi-value", fmt_pct(chg$units_change_pct)),
           div(class = "kpi-subtitle", paste(chg$units_a, "units ->", chg$units_b, "units"))
       ),
       div(class = "kpi-card emerald",
           div(class = "kpi-label", "Top Improvement"),
-          div(class = "kpi-value", style = "font-size: 1.35rem;", chg$top_gainer$product),
-          div(class = "kpi-subtitle", paste0("+", round(chg$top_gainer$rev_pct, 1), "% revenue gain"))
+          div(class = "kpi-value", style = "font-size: 1.35rem;",
+              if (!is.null(chg$top_gainer)) chg$top_gainer$product else "N/A"),
+          div(class = "kpi-subtitle", gainer_label)
       ),
       div(class = "kpi-card amber",
           div(class = "kpi-label", "Biggest Decline"),
-          div(class = "kpi-value", style = "font-size: 1.35rem;", chg$biggest_decline$product),
-          div(class = "kpi-subtitle", paste0(round(chg$biggest_decline$rev_pct, 1), "% revenue drop"))
+          div(class = "kpi-value", style = "font-size: 1.35rem;",
+              if (!is.null(chg$biggest_decline)) chg$biggest_decline$product else "N/A"),
+          div(class = "kpi-subtitle", decline_label)
       )
     )
   })
@@ -784,8 +837,8 @@ server <- function(input, output, session) {
         Category     = category,
         Quantity     = quantity,
         `Unit Price` = paste0("Rs ", unit_price),
-        Discount     = paste0("Rs ", discount),
-        `Net Revenue` = paste0("Rs ", revenue)
+        `Discount (%)`  = paste0(discount, "%"),
+        `Net Revenue` = paste0("Rs ", round(revenue, 2))
       )
 
     datatable(

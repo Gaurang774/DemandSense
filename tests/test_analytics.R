@@ -23,12 +23,18 @@ cat(sprintf("  ✓ Loaded and enriched %d rows\n", nrow(df)))
 cat("[2/7] Testing Messy Data Cleaning & Audit Trail...\n")
 raw_messy <- load_sales_data("data/sample_messy.csv")
 messy_res <- clean_sales_data(raw_messy)
-cat(sprintf("  ✓ Initial rows: %d | Cleaned rows: %d | Duplicates pruned: %d | Invalid removed: %d\n",
-            messy_res$audit$initial_rows,
-            messy_res$audit$final_clean_rows,
-            messy_res$audit$duplicate_rows_removed,
-            messy_res$audit$invalid_records_removed))
-stopifnot(messy_res$audit$final_clean_rows < messy_res$audit$initial_rows)
+cat(sprintf("  ✓ Initial rows: %d | Cleaned rows: %d | Duplicates pruned: %d | Removed: %d\n",
+            messy_res$audit$total_input_rows,
+            messy_res$audit$rows_after_cleaning,
+            messy_res$audit$duplicates_removed,
+            messy_res$audit$rows_removed))
+if (messy_res$audit$non_positive_qty_rows > 0)
+  cat(sprintf("  ⚠ Negative/zero quantity rows dropped: %d\n", messy_res$audit$non_positive_qty_rows))
+if (messy_res$audit$discount_clamped_rows > 0)
+  cat(sprintf("  ⚠ Discount >100%% clamped: %d\n", messy_res$audit$discount_clamped_rows))
+if (messy_res$audit$mixed_date_formats)
+  cat("  ⚠ Mixed date formats detected in source file\n")
+stopifnot(messy_res$audit$rows_after_cleaning < messy_res$audit$total_input_rows)
 
 # 3. Test Summary KPIs
 cat("[3/7] Testing KPI Calculations...\n")
@@ -64,20 +70,25 @@ cat(sprintf("  ✓ Mean daily rev: ₹%s | SD: ₹%s | Outliers flagged: %d\n",
             nrow(anomalies$anomalies)))
 stopifnot(nrow(anomalies$anomalies) > 0)
 
-# 6. Test 'What Changed?' and Demand Patterns
+# 6. Test 'What Changed?' and Demand Patterns (with zero-baseline edge cases)
 cat("[6/7] Testing 'What Changed?' and Trajectory Classification...\n")
 patterns <- classify_demand_patterns(df)
-cat(sprintf("  ✓ Classified %d products: %d Growing, %d Stable, %d Declining\n",
-            nrow(patterns),
-            sum(patterns$status == "Growing"),
-            sum(patterns$status == "Stable"),
-            sum(patterns$status == "Declining")))
+n_emerging     <- sum(patterns$status == "Emerging")
+n_growing      <- sum(patterns$status == "Growing")
+n_stable       <- sum(patterns$status == "Stable")
+n_declining    <- sum(patterns$status == "Declining")
+n_discontinued <- sum(patterns$status == "Discontinued")
+n_no_activity  <- sum(patterns$status == "No Activity")
+cat(sprintf("  ✓ Classified %d products: %d Growing, %d Stable, %d Declining, %d Emerging, %d Discontinued, %d No Activity\n",
+            nrow(patterns), n_growing, n_stable, n_declining, n_emerging, n_discontinued, n_no_activity))
 
 period_change <- analyze_period_change(df, "2026-05-01", "2026-06-30", "2026-07-01", "2026-08-31")
-cat(sprintf("  ✓ Period A vs B: Rev Delta = %+.1f%% | Top Gainer: %s (%+.1f%%)\n",
-            period_change$rev_change_pct,
+# Format safely — handle Inf for display
+fmt_safe <- function(v) { if (is.infinite(v)) "New" else sprintf("%+.1f%%", v) }
+cat(sprintf("  ✓ Period A vs B: Rev Delta = %s | Top Gainer: %s (%s)\n",
+            fmt_safe(period_change$rev_change_pct),
             period_change$top_gainer$product,
-            period_change$top_gainer$rev_pct))
+            fmt_safe(period_change$top_gainer$rev_pct)))
 
 # 7. Test Insights Generator & Forecast
 cat("[7/7] Testing Insight Generator & 7-Day Forecast...\n")

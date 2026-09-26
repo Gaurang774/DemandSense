@@ -63,14 +63,27 @@ generate_executive_insights <- function(kpis,
     ))
   }
 
-  # ---- Insight 3: Growing and declining products ----
-  # If we have demand pattern data, highlight the fastest grower and steepest decliner
+  # ---- Insight 3: Growing, emerging, and declining products ----
+  # If we have demand pattern data, highlight emerging, fastest grower and steepest decliner
   if (!is.null(patterns) && nrow(patterns) > 0) {
 
-    growing  <- patterns %>% dplyr::filter(change_pct > 10)
-    declining <- patterns %>% dplyr::filter(change_pct < -10)
+    emerging <- patterns %>% dplyr::filter(status == "Emerging")
+    growing  <- patterns %>% dplyr::filter(status == "Growing")
+    declining <- patterns %>% dplyr::filter(status == "Declining")
+    discontinued <- patterns %>% dplyr::filter(status == "Discontinued")
 
-    # Fastest growing product
+    # Newly emerged products (were absent in early period, appeared in recent)
+    if (nrow(emerging) > 0) {
+      emerging_names <- paste(emerging$product, collapse = ", ")
+      insights <- c(insights, sprintf(
+        "**Emerging Demand:** **%s** — %s not present in the early period but appeared recently (%.1f avg daily units).",
+        emerging_names,
+        ifelse(nrow(emerging) == 1, "was", "were"),
+        if (nrow(emerging) == 1) emerging$recent_avg[1] else mean(emerging$recent_avg)
+      ))
+    }
+
+    # Fastest growing product (with a calculable percentage)
     if (nrow(growing) > 0) {
       top_grower <- growing[1, ]
       insights <- c(insights, sprintf(
@@ -85,6 +98,15 @@ generate_executive_insights <- function(kpis,
       insights <- c(insights, sprintf(
         "**Demand Contraction Alert:** **%s** demand declined by **%.1f%%** between early and recent periods.",
         top_decliner$product, abs(top_decliner$change_pct)
+      ))
+    }
+
+    # Discontinued products (had demand in early period, dropped to zero)
+    if (nrow(discontinued) > 0) {
+      disc_names <- paste(discontinued$product, collapse = ", ")
+      insights <- c(insights, sprintf(
+        "**Discontinued Demand:** **%s** had sales in the early period but dropped to zero recently.",
+        disc_names
       ))
     }
   }

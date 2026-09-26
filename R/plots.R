@@ -361,19 +361,38 @@ plot_period_delta_chart <- function(change_stats, interactive = TRUE) {
     return(if (interactive) format_plotly(plotly::ggplotly(p)) else p)
   }
 
+  # Cap Inf values for display (can't plot infinite bars)
+  # and create a human-readable label for the tooltip
+  max_finite <- max(abs(delta_df$rev_pct[is.finite(delta_df$rev_pct)]), 100, na.rm = TRUE)
+  cap_value <- max_finite * 1.3  # 30% beyond the biggest finite bar
+
+  delta_df <- delta_df %>%
+    dplyr::mutate(
+      display_label = dplyr::case_when(
+        is.infinite(rev_pct) & rev_pct > 0 ~ "New (no baseline)",
+        is.infinite(rev_pct) & rev_pct < 0 ~ "Eliminated",
+        TRUE ~ sprintf("%+.1f%%", rev_pct)
+      ),
+      rev_pct_display = dplyr::case_when(
+        is.infinite(rev_pct) & rev_pct > 0 ~ cap_value,
+        is.infinite(rev_pct) & rev_pct < 0 ~ -cap_value,
+        TRUE ~ rev_pct
+      )
+    )
+
   # Flag whether each product grew or shrank
-  delta_df$is_positive <- delta_df$rev_pct >= 0
+  delta_df$is_positive <- delta_df$rev_pct_display >= 0
 
   p <- ggplot2::ggplot(delta_df, ggplot2::aes(
-    x = reorder(product, rev_pct), y = rev_pct, fill = is_positive
+    x = reorder(product, rev_pct_display), y = rev_pct_display, fill = is_positive
   )) +
     ggplot2::geom_col(
       width = 0.55, show.legend = FALSE,
       ggplot2::aes(text = paste0(
         "Product: ", product,
-        "<br>Change: ", sprintf("%+.1f%%", rev_pct),
-        "<br>Period A: Rs ", format(round(rev_a), big.mark = ","),
-        "<br>Period B: Rs ", format(round(rev_b), big.mark = ",")
+        "\n Change: ", display_label,
+        "\n Period A: Rs ", format(round(rev_a), big.mark = ","),
+        "\n Period B: Rs ", format(round(rev_b), big.mark = ",")
       ))
     ) +
     ggplot2::coord_flip() +

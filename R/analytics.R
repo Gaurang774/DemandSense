@@ -130,14 +130,23 @@ calc_product_performance <- function(df, product_name) {
     half       <- floor(n_days / 2)
     early_avg  <- mean(daily$quantity[1:half], na.rm = TRUE)
     recent_avg <- mean(daily$quantity[(half + 1):n_days], na.rm = TRUE)
-    pct_diff   <- if (early_avg > 0) ((recent_avg - early_avg) / early_avg) * 100 else 0
 
-    if (pct_diff > 8) {
-      trend_label <- sprintf("Increasing (+%.1f%%)", pct_diff)
-    } else if (pct_diff < -8) {
-      trend_label <- sprintf("Decreasing (%.1f%%)", pct_diff)
+    # Handle zero-baseline cases: percentage change from 0 is undefined
+    if (early_avg == 0 && recent_avg > 0) {
+      trend_label <- "Emerging (New Demand)"
+    } else if (early_avg > 0 && recent_avg == 0) {
+      trend_label <- "Discontinued (-100%)"
+    } else if (early_avg == 0 && recent_avg == 0) {
+      trend_label <- "No Activity"
     } else {
-      trend_label <- sprintf("Stable (%+.1f%%)", pct_diff)
+      pct_diff <- ((recent_avg - early_avg) / early_avg) * 100
+      if (pct_diff > 8) {
+        trend_label <- sprintf("Increasing (+%.1f%%)", pct_diff)
+      } else if (pct_diff < -8) {
+        trend_label <- sprintf("Decreasing (%.1f%%)", pct_diff)
+      } else {
+        trend_label <- sprintf("Stable (%+.1f%%)", pct_diff)
+      }
     }
   } else {
     trend_label <- "Neutral"
@@ -300,14 +309,25 @@ classify_demand_patterns <- function(df) {
       recent_units = replace_na(recent_units, 0),
       early_avg    = early_units / early_days_count,
       recent_avg   = recent_units / recent_days_count,
-      change_pct   = ifelse(early_avg > 0, ((recent_avg - early_avg) / early_avg) * 100, 0),
+      # Percentage change: handle zero-baseline cases properly
+      # (division by zero is mathematically undefined, not 0%)
+      change_pct   = case_when(
+        early_avg == 0 & recent_avg == 0 ~ 0,       # No activity in either period
+        early_avg == 0 & recent_avg > 0  ~ Inf,      # New/emerging demand (undefined %)
+        early_avg > 0  & recent_avg == 0 ~ -100,     # Completely stopped
+        TRUE ~ ((recent_avg - early_avg) / early_avg) * 100
+      ),
       status       = case_when(
-        change_pct > 10  ~ "Growing",
-        change_pct < -10 ~ "Declining",
-        TRUE             ~ "Stable"
+        early_avg == 0 & recent_avg > 0  ~ "Emerging",      # New demand appeared
+        early_avg > 0  & recent_avg == 0 ~ "Discontinued",  # Demand vanished
+        early_avg == 0 & recent_avg == 0 ~ "No Activity",   # Never sold in either half
+        change_pct > 10                  ~ "Growing",
+        change_pct < -10                 ~ "Declining",
+        TRUE                             ~ "Stable"
       )
     ) %>%
-    arrange(desc(change_pct))
+    # Sort: Emerging first, then by change_pct descending, Discontinued/No Activity last
+    arrange(desc(status == "Emerging"), desc(change_pct))
 
   return(merged)
 }
@@ -397,8 +417,18 @@ analyze_period_change <- function(df, start_a, end_a, start_b, end_b) {
   days_b  <- max(1, length(unique(df_b$date)))
 
   # Percentage change between the two periods
-  rev_change_pct   <- if (rev_a > 0) ((rev_b - rev_a) / rev_a) * 100 else 0
-  units_change_pct <- if (units_a > 0) ((units_b - units_a) / units_a) * 100 else 0
+  # Handle zero-baseline: percentage change from 0 is undefined
+  rev_change_pct <- case_when(
+    rev_a == 0 & rev_b == 0 ~ 0,
+    rev_a == 0 & rev_b > 0  ~ Inf,
+    rev_a == 0 & rev_b < 0  ~ -Inf,
+    TRUE ~ ((rev_b - rev_a) / rev_a) * 100
+  )
+  units_change_pct <- case_when(
+    units_a == 0 & units_b == 0 ~ 0,
+    units_a == 0 & units_b > 0  ~ Inf,
+    TRUE ~ ((units_b - units_a) / units_a) * 100
+  )
 
   # --- Product-level breakdown ---
   p_a <- df_a %>%
@@ -409,7 +439,7 @@ analyze_period_change <- function(df, start_a, end_a, start_b, end_b) {
     group_by(product) %>%
     summarise(rev_b = sum(revenue, na.rm = TRUE), units_b = sum(quantity, na.rm = TRUE), .groups = "drop")
 
-  # Join and calculate differences
+  # Join and calculate differences with proper zero-baseline handling
   p_comp <- full_join(p_a, p_b, by = "product") %>%
     mutate(
       rev_a     = replace_na(rev_a, 0),
@@ -417,15 +447,27 @@ analyze_period_change <- function(df, start_a, end_a, start_b, end_b) {
       units_a   = replace_na(units_a, 0),
       units_b   = replace_na(units_b, 0),
       rev_diff  = rev_b - rev_a,
-      rev_pct   = ifelse(rev_a > 0, ((rev_b - rev_a) / rev_a) * 100, 100),
+      # Proper zero-baseline: 0→0 is 0% change, not 100%
+      rev_pct   = case_when(
+        rev_a == 0 & rev_b == 0 ~ 0,
+        rev_a == 0 & rev_b > 0  ~ Inf,
+        rev_a == 0 & rev_b < 0  ~ -Inf,
+        TRUE ~ ((rev_b - rev_a) / rev_a) * 100
+      ),
       units_diff = units_b - units_a,
-      units_pct = ifelse(units_a > 0, ((units_b - units_a) / units_a) * 100, 100)
+      units_pct = case_when(
+        units_a == 0 & units_b == 0 ~ 0,
+        units_a == 0 & units_b > 0  ~ Inf,
+        TRUE ~ ((units_b - units_a) / units_a) * 100
+      )
     ) %>%
     arrange(desc(rev_pct))
 
   # Identify the biggest winner and biggest loser
-  top_gain      <- if (nrow(p_comp) > 0) p_comp[1, ] else NULL
-  steepest_drop <- if (nrow(p_comp) > 0) p_comp[nrow(p_comp), ] else NULL
+  # Filter out products with zero change in both periods (no real movement)
+  meaningful <- p_comp %>% filter(rev_diff != 0)
+  top_gain      <- if (nrow(meaningful) > 0) meaningful[1, ] else if (nrow(p_comp) > 0) p_comp[1, ] else NULL
+  steepest_drop <- if (nrow(meaningful) > 0) meaningful[nrow(meaningful), ] else if (nrow(p_comp) > 0) p_comp[nrow(p_comp), ] else NULL
 
   return(list(
     rev_a = rev_a, rev_b = rev_b, rev_change_pct = rev_change_pct,
